@@ -38,5 +38,5 @@ jobs:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
         heroku_app_name: "discord-reminders-app"
         heroku_email: ${{secrets.HEROKU_EMAIL_ADDRESS}}
-        dontuseforce: true
+        dontuseforce: 1
         appdir: "./src/discord-bot"
