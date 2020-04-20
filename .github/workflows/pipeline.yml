@@ -39,3 +39,7 @@ jobs:
         heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
         heroku_email: ${{secrets.HEROKU_EMAIL_ADDRESS}}
         appdir: "src/discord-bot"
+    - name: Add Discord Token to Heroku Config Vars
+      env: 
+        HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
+      run: heroku config:set DISCORD_TOKEN=${{secrets.DISCORD_TOKEN}}
