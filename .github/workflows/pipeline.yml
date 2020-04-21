@@ -32,6 +32,10 @@ jobs:
       working-directory: ${{env.working-directory}}
       env:
         CI: true
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: Deploy Discord Bot to Heroku
       uses: AkhileshNS/heroku-deploy@v3.0.4
       with:
