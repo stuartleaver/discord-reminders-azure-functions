@@ -8,6 +8,11 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+    
+env:
+  AZURE_RESOURCE_GROUP: RemindersApp_rg  
+  AZURE_RESOURCE_GROUP_LOCATION: uksouth
+  AZURE_DEPLOYMENT_GROUP_NAME: RemindersAppResourceDeployment
 
 jobs:
   build:
@@ -36,6 +41,13 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Azure CLI script to create the Function App resources
+      uses: azure/CLI@v1
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.AZURE_RESOURCE_GROUP }}
+          az deployment group create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_DEPLOYMENT_GROUP_NAME }} --template-file ./azuredeploy.json --parameters ./azuredeploy.parameters.json
     - name: Deploy Discord Bot to Heroku
       uses: AkhileshNS/heroku-deploy@v3.0.4
       with:
