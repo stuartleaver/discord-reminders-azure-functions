@@ -46,7 +46,7 @@ jobs:
       with:
         azcliversion: latest
         inlineScript: |
-          az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.AZURE_RESOURCE_GROUP }}
+          az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.AZURE_RESOURCE_GROUP_LOCATION }}
           az deployment group create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_DEPLOYMENT_GROUP_NAME }} --template-file ./azuredeploy.json --parameters ./azuredeploy.parameters.json
     - name: Deploy Discord Bot to Heroku
       uses: AkhileshNS/heroku-deploy@v3.0.4
