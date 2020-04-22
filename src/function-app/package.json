@@ -1,0 +1,12 @@
+{
+  "name": "function-app",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "prestart": "npm install",
+    "start": "func start",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
