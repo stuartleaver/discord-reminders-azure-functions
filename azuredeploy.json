@@ -4,6 +4,7 @@
   "parameters": {
     "appName": {
       "type": "String",
+      "defaultValue": "remindersapp",
       "metadata": {
         "description": "The name of the reminders app that you wish to create."
       }
