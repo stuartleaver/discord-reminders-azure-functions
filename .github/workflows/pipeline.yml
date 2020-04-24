@@ -13,49 +13,38 @@ env:
   AZURE_RESOURCE_GROUP: RemindersApp_rg  
   AZURE_RESOURCE_GROUP_LOCATION: uksouth
   AZURE_DEPLOYMENT_GROUP_NAME: RemindersAppResourceDeployment
+  NODE_VERSION: '12.x'
+  DISCORD_BOT_PACKAGE_PATH: src/discord-bot
 
 jobs:
-  build:
-
+  build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      working-directory: ./src/discord-bot
-
-    strategy:
-      matrix:
-        node-version: [12.x]
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v2
+    
+    - name: Setup Node ${{ env.NODE_VERSION }} Environment
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-      working-directory: ${{env.working-directory}}
-    - run: npm run build --if-present
-      working-directory: ${{env.working-directory}}
-      env:
-        CI: true
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - name: Azure CLI script to create the Function App resources
-      uses: azure/CLI@v1
-      with:
-        azcliversion: latest
-        inlineScript: |
-          az group create --name ${{ env.AZURE_RESOURCE_GROUP }} --location ${{ env.AZURE_RESOURCE_GROUP_LOCATION }}
-          az deployment group create --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_DEPLOYMENT_GROUP_NAME }} --template-file ./azuredeploy.json --parameters ./azuredeploy.parameters.json
-    - name: Deploy Discord Bot to Heroku
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: 'Build Discord Bot'
+      shell: bash
+      run: |
+        pushd './${{ env.DISCORD_BOT_PACKAGE_PATH }}'
+        npm install
+        npm run build --if-present
+        popd
+
+    - name: 'Deploy Discord Bot to Heroku'
       uses: AkhileshNS/heroku-deploy@v3.0.4
       with:
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
-        heroku_email: ${{secrets.HEROKU_EMAIL_ADDRESS}}
-        appdir: "src/discord-bot"
-    - name: Add Discord Token to Heroku Config Vars
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+        heroku_email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
+        appdir: ${{ env.DISCORD_BOT_PACKAGE_PATH }}
+
+    - name: 'Add Discord Token to Heroku Config Vars'
       env: 
-        HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
-      run: heroku config:set DISCORD_TOKEN=${{secrets.DISCORD_TOKEN}}
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: heroku config:set DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
