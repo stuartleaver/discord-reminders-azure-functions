@@ -46,6 +46,14 @@ jobs:
       env: 
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       run: heroku config:set DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+
+    - name: 'Build Azure Functions'
+      shell: bash
+      run: |
+        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+        npm install
+        npm run build --if-present
+        popd
   
     - name: 'Deploy Azure Functions'
       uses: Azure/functions-action@v1
