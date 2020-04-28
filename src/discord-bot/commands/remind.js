@@ -14,14 +14,20 @@ module.exports = {
         const taggedUser = message.mentions.users.first();
         const reminder = args.join(" ");
 
-        axios.post(`${process.env.AZURE_FUNCTION_APP_ENDPOINT}SimpleHttpTriggerTest`, {
+        axios.post(`${process.env.AZURE_FUNCTION_APP_ENDPOINT}SimpleHttpTriggerTeste`, {
             text: reminder
         })
             .then(function (response) {
-                message.channel.send(response.data);
+                if(response.status == 200){
+                    message.channel.send(`'${reminder}' has been scheduled`);
+                } else {
+                    message.author.send('Opps, something went wrong with your reminder.')
+                }
             })
             .catch(function (error) {
                 console.log(error);
+
+                message.author.send('Opps, something went wrong with your reminder.')
             });
     },
 };
