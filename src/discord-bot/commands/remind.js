@@ -13,7 +13,7 @@ module.exports = {
 
         const reminder = args.join(" ");
 
-        axios.post(`${process.env.AZURE_FUNCTION_APP_ENDPOINT}/orchestrators/reminderOrchestrator`, {
+        axios.post(`${process.env.AZURE_FUNCTION_APP_ENDPOINT}/api/orchestrators/reminderOrchestrator?code=${process.env.AZURE_FUNCTION_APP_MASTER_KEY}`, {
             reminder: reminder
         })
             .then(function (response) {

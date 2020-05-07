@@ -13,6 +13,3 @@ module.exports = async function (context) {
             console.log(`Error: ${error}`);
         })
 };
-
-
-
