@@ -6,8 +6,8 @@ module.exports = async function (context, req) {
     const client = df.getClient(context);
 
     var data = {
-        'message': req.body.message,
-        'reminderDueAt': moment.utc(chrono.parseDate(req.body.message))
+        'reminder': req.body.reminder,
+        'reminderDueAt': moment.utc(chrono.parseDate(req.body.reminder))
     }
 
     const instanceId = await client.startNew(req.params.functionName, undefined, data);

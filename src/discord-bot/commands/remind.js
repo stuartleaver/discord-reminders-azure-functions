@@ -11,14 +11,13 @@ module.exports = {
             return message.reply('You need to tag a user in order to remind them!');
         }
 
-        const taggedUser = message.mentions.users.first();
         const reminder = args.join(" ");
 
-        axios.post(`${process.env.AZURE_FUNCTION_APP_ENDPOINT}SimpleHttpTriggerTeste`, {
-            text: reminder
+        axios.post(`${process.env.AZURE_FUNCTION_APP_ENDPOINT}/api/orchestrators/reminderOrchestrator?code=${process.env.AZURE_FUNCTION_APP_MASTER_KEY}`, {
+            reminder: reminder
         })
             .then(function (response) {
-                if(response.status == 200){
+                if(response.status == 202){
                     message.channel.send(`'${reminder}' has been scheduled`);
                 } else {
                     message.author.send('Opps, something went wrong with your reminder.')
