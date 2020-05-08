@@ -6,11 +6,9 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
-    
+
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './src/function-app'
+  AZURE_FUNCTION_APP_PACKAGE_PATH: './src/function-app'
   NODE_VERSION: '12.x'
   DISCORD_BOT_PACKAGE_PATH: src/discord-bot
 
@@ -20,11 +18,16 @@ jobs:
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v2
-    
+
     - name: Setup Node ${{ env.NODE_VERSION }} Environment
       uses: actions/setup-node@v1
       with:
         node-version: ${{ env.NODE_VERSION }}
+
+    - name: 'Login to Azure'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: 'Build Discord Bot'
       shell: bash
@@ -42,10 +45,13 @@ jobs:
         heroku_email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
         appdir: ${{ env.DISCORD_BOT_PACKAGE_PATH }}
 
-    - name: 'Add Discord Token to Heroku Config Vars'
-      env: 
+    - name: 'Set up Heroku Config Vars'
+      env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-      run: heroku config:set DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+      run: |
+        heroku config:set AZURE_FUNCTION_APP_ENDPOINT=${{ secrets.AZURE_FUNCTION_APP_ENDPOINT }}
+        heroku config:set AZURE_FUNCTION_APP_MASTER_KEY=${{ secrets.AZURE_FUNCTION_APP_MASTER_KEY }}
+        heroku config:set DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
 
     - name: 'Build Azure Functions'
       shell: bash
@@ -54,11 +60,17 @@ jobs:
         npm install
         npm run build --if-present
         popd
-  
+
+    - name: Add Azure Function App Application Settings
+      uses: azure/CLI@v1
+      with:
+        inlineScript: |
+          az functionapp config appsettings set --name ${{ secrets.AZURE_FUNCTION_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --settings "DiscordWebhook=${{ secrets.DISCORD_TOKEN }}"
+
     - name: 'Deploy Azure Functions'
       uses: Azure/functions-action@v1
       id: fa
       with:
-        app-name: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}
-        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+        app-name: ${{ secrets.AZURE_FUNCTION_APP_NAME }}
+        package: ${{ env.AZURE_FUNCTION_APP_PACKAGE_PATH }}
+        publish-profile: ${{ secrets.AZURE_FUNCTION_APP_PUBLISH_PROFILE }}
