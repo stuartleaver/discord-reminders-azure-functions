@@ -56,7 +56,7 @@ jobs:
     - name: 'Build Azure Functions'
       shell: bash
       run: |
-        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+        pushd './${{ env.AZURE_FUNCTION_APP_PACKAGE_PATH }}'
         npm install
         npm run build --if-present
         popd
@@ -65,7 +65,7 @@ jobs:
       uses: azure/CLI@v1
       with:
         inlineScript: |
-          az functionapp config appsettings set --name ${{ secrets.AZURE_FUNCTION_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --settings "DiscordWebhook=${{ secrets.DISCORD_TOKEN }}"
+          az functionapp config appsettings set --name ${{ secrets.AZURE_FUNCTION_APP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP_NAME }} --settings "DiscordWebhook=${{ secrets.DISCORD_WEBHOOK }}"
 
     - name: 'Deploy Azure Functions'
       uses: Azure/functions-action@v1
