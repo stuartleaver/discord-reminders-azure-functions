@@ -14,7 +14,7 @@
   "author": "Stuart Leaver",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.16.2",
+    "axios": "^0.18.1",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "tsscmp": "^1.0.6"
