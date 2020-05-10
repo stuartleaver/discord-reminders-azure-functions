@@ -11,6 +11,7 @@ env:
   AZURE_FUNCTION_APP_PACKAGE_PATH: './src/function-app'
   NODE_VERSION: '12.x'
   DISCORD_BOT_PACKAGE_PATH: src/discord-bot
+  SLACK_APP_PACKAGE_PATH: src/slack-app
 
 jobs:
   build-and-deploy:
@@ -41,9 +42,25 @@ jobs:
       uses: AkhileshNS/heroku-deploy@v3.0.4
       with:
         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-        heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+        heroku_app_name: ${{ secrets.HEROKU_APP_NAME_DISCORD_BOT }}
         heroku_email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
         appdir: ${{ env.DISCORD_BOT_PACKAGE_PATH }}
+
+    - name: 'Build Slack App'
+      shell: bash
+      run: |
+        pushd './${{ env.SLACK_APP_PACKAGE_PATH }}'
+        npm install
+        npm run build --if-present
+        popd
+
+    - name: 'Deploy Slack App to Heroku'
+      uses: AkhileshNS/heroku-deploy@v3.0.4
+      with:
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: ${{ secrets.HEROKU_APP_NAME_SLACK_APP }}
+        heroku_email: ${{ secrets.HEROKU_EMAIL_ADDRESS }}
+        appdir: ${{ env.SLACK_APP_PACKAGE_PATH }}
 
     - name: 'Set up Heroku Config Vars'
       env:
@@ -52,6 +69,7 @@ jobs:
         heroku config:set AZURE_FUNCTION_APP_ENDPOINT=${{ secrets.AZURE_FUNCTION_APP_ENDPOINT }}
         heroku config:set AZURE_FUNCTION_APP_MASTER_KEY=${{ secrets.AZURE_FUNCTION_APP_MASTER_KEY }}
         heroku config:set DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}
+        heroku config:set SLACK_SIGNING_SECRET=${{ secrets.SLACK_SIGNING_SECRET }}
 
     - name: 'Build Azure Functions'
       shell: bash

@@ -28,8 +28,10 @@ The following table shows the Secrets that need setting up, and details on where
 | DISCORD_TOKEN                      | The Client ID of the created Discord Bot. |
 | DISCORD_WEBHOOK                    | The URL of the Discord Webhook. |
 | HEROKU_API_KEY                     | Your Heroku API key which is available in your Account Settings. |
-| HEROKU_APP_NAME                    | The name you wish to use for the Heroku app. |
+| HEROKU_APP_NAME_DISCORD_BOT        | The name you wish to use for the Heroku app hosting the Discord Bot. |
+| HEROKU_APP_NAME_SLACK_APP          | The name you wish to use for the Heroku app hosting the Slack App. |
 | HEROKU_EMAIL_ADDRESS               | The email address you used for your Heroku account. |
+| SLACK_SIGNING_SECRET               | The signing secret of the Slack App . |
 
 If deploying differently, you will need to setup the variable according to where you are deploying. If running locally, you will need to create a `.env` file for the Discord Bot and a `local.settings.json` file for the Functions.
 
