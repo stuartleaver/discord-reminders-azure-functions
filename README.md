@@ -1,8 +1,8 @@
-# Reminders Discord Bot and Slack App with Azure Functions
-A Discord Bot and Slack App to create reminders with the Durable Functions extension in Azure Functions.
+# Reminders Discord Bot and Azure Durable Functions
+A Discord Bot to create reminders with the Durable Functions extension in Azure Functions.
 
 ## Quick Deploy to Azure
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstuartleaver%2Fdiscord-slack-reminders-azure-functions%2Fmaster%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstuartleaver%2Fdiscord-reminders-azure-functions%2Fmaster%2Fazuredeploy.json)
 
 This template creates the resources required.
 
@@ -19,7 +19,7 @@ The following table shows the Secrets that need setting up, and details on where
 
 | Key                                | Description |
 | :-------------                     | :------------- |
-| AZURE_CREDENTIALS                  | The JSON role assignment credentials of a service primciple. See below for instructions. |
+| AZURE_CREDENTIALS                  | The JSON role assignment credentials of a service principle. See below for instructions. |
 | AZURE_FUNCTION_APP_ENDPOINT        | The URL of your Function App created by the ARM Template without a trailing backslash e.g. https://{name-of-function-app}.azurewebsites.net |
 | AZURE_FUNCTION_APP_MASTER_KEY      | The master key of the Function App created by the ARM Template |
 | AZURE_FUNCTION_APP_NAME            | The name of the Function App created by the ARM Template |
@@ -29,9 +29,7 @@ The following table shows the Secrets that need setting up, and details on where
 | DISCORD_WEBHOOK                    | The URL of the Discord Webhook. |
 | HEROKU_API_KEY                     | Your Heroku API key which is available in your Account Settings. |
 | HEROKU_APP_NAME_DISCORD_BOT        | The name you wish to use for the Heroku app hosting the Discord Bot. |
-| HEROKU_APP_NAME_SLACK_APP          | The name you wish to use for the Heroku app hosting the Slack App. |
 | HEROKU_EMAIL_ADDRESS               | The email address you used for your Heroku account. |
-| SLACK_SIGNING_SECRET               | The signing secret of the Slack App . |
 
 If deploying differently, you will need to setup the variable according to where you are deploying. If running locally, you will need to create a `.env` file for the Discord Bot and a `local.settings.json` file for the Functions.
 
