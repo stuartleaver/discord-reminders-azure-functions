@@ -1,6 +1,35 @@
 # Reminders Discord Bot and Azure Durable Functions
 A Discord Bot to create reminders with the Durable Functions extension in Azure Functions.
 
+## What are Azure Durable Functions?
+Azure Durable Functions is an extension of Azure Functions and it lets you use state in a serverless environment. More information can be found in the [documentation](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=csharp)", but what what are we going to use state for?
+
+In this sample, state will be used to create a Discord Reminders Bot with a bit of natural language processing thrown in as well. In a Discord Server where the Bot is, someone could type "!remind @stuartleaver to go for a walk in two hours". That reminder will get sent to a Durable Function and after being parsed by [Chrono](https://github.com/wanasit/chrono) and [Moment.js](https://momentjs.com), will orchestrate a timer and an activity function. First, the timer will be created:
+
+`yield context.df.createTimer(new Date(reminderDueAt));` - `reminderDueAt` being the time from `Chrono`
+
+That timer will hold it's state (for up to seven days), even within a serverless environment, and then will call the `sendToDiscord` activity when the time passes:
+
+`return yield context.df.callActivity("sendToDiscord", data);`
+
+A call will then we made back to a webhook in the Discord Server to post the reminder.
+
+The statefulness is stored within a Storage Account. However, as mentioned above, this does have limitations because a timer is then limited to 7 days. This is highlighted in the [documentation](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-timers?tabs=csharp) for Timers in Durable Functions:
+
+>* Durable timers are currently limited to 7 days. If longer delays are needed, they can be simulated using the timer APIs in a while loop.
+* Always use `CurrentUtcDateTime` instead of `DateTime.UtcNow` in .NET or `currentUtcDateTime` instead of `Date.now` or `Date.UTC` in JavaScript when computing the fire time for durable timers. For more information, see the orchestrator function code constraints article.
+
+So while a simple sample, it introduces using Durable Functions to hold state state within a serverless environment. The primary use is to simplify complex, stateful coordination in serverless applications and here is a list of typical application patterns:
+
+* [Function chaining](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=csharp#chaining)
+* [Fan-out/fan-in](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=csharp#fan-in-out)
+* [Async HTTP APIs](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=csharp#async-http)
+* [Monitoring](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=csharp#monitoring)
+* [Human interaction](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=csharp#human)
+* [Aggregator (stateful entities)](https://docs.microsoft.com/en-us/azure/azure-functions/durable/durable-functions-overview?tabs=csharp#aggregator)
+
+The following sections will go into deploying the resources in Azure and setting up the Discord Bot. This won't go into details of the Bot as the main point here is the Durable Functions. Some assumptions have been made on hosting, and so some changes may be needed if hosted in a different way.
+
 ## Quick Deploy to Azure
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstuartleaver%2Fdiscord-reminders-azure-functions%2Fmaster%2Fazuredeploy.json)
 
@@ -87,7 +116,7 @@ Then it just needs adding to a server.
 ### Adding your bot to servers
 Again, you can follow the "[Adding your bot to servers](https://discordjs.guide/preparations/adding-your-bot-to-servers.html)" for this step.
 
-Once added, you should see something similiar to this:
+Once added, you should see something similar to this:
 
 ![discord-bot-server](assets/discord-bot-server.png)
 
@@ -101,6 +130,21 @@ You can create webhooks directly through the discord client, go to Server Settin
 Once you are there, click on the `Create Webhook` button on the top right. This will create a webhook, from here you can edit the channel, the name, and the avatar. Copy the link, the first part is the id, and the second is the token, you will need this later.
 
 ![discord-edit-webhook](assets/discord-edit-webhook.png)
+
+# Usage
+When everything has been setup, it's time to schedule a reminder. To schedule a reminder, use the `!remind` command with who and what you would like to remind:
+
+`!remind @stuartleaver to go for a walk in two hours`
+
+You should then see your message followed by one from the Bot in the channel:
+
+![discord-set-reminder](assets/discord-set-reminder.png)
+
+When the time comes, you should see your reminder being posted via the webhook:
+
+![discord-receive-reminder](assets/discord-receive-reminder.png)
+
+If you take a look at the times, you will see that the message from the webhook, is two hours after the reminder.
 
 ## License
 [MIT](LICENSE)
