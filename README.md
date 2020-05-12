@@ -88,7 +88,14 @@ If deploying differently, you will need to setup the variable according to where
 
 2. Click Get publish profile and download .PublishSettings file.
 
-3. Open the .PublishSettings file and copy the content.
+3. Open the `.PublishSettings` file and copy the content.
+
+## Deploying the Durable functions manually
+If you don't use the Action to deploy the Durable Functions, there are other ways as well.
+
+Probably the most easiest is through the Function App extension in VS Code. The code for the Durable functions is in `\src\function-app` and the instructions on how to deploy it if not already known is in the following blog post:
+
+[Using Visual Studio Code and extensions to deploy to Azure Function and App Service resources](https://stuartleaver.dev/using-visual-studio-code-to-deploy-to-azure-function-and-app-service-resources/)
 
 
 ## Discord Bot & Webhook Setup
