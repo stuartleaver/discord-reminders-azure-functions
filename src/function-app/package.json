@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "chrono-node": "^1.4.6",
+    "chrono-node": "^2.2.4",
     "durable-functions": "^1.4.1",
     "moment-timezone": "^0.5.28"
   },
