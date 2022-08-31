@@ -11,7 +11,7 @@
     "axios": "^0.19.2",
     "chrono-node": "^1.4.6",
     "durable-functions": "^1.4.1",
-    "moment-timezone": "^0.5.28"
+    "moment-timezone": "^0.5.35"
   },
   "devDependencies": {}
 }
